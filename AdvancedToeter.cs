@@ -55,11 +55,12 @@ namespace func {
 
         public void SendEmail(int locationId, int clientId, int itemId) {
             
+            //monadic approach
             var letter = _locationRepository.Get(locationId)
                 .Bind(location => _clientRepository.Get(clientId)
                 .Bind(client => _itemRepository.Get(itemId)
                 .Bind(item => CreateActualEmail(location, client, item))));
-            
+
             // var letter = 
             //     from location in _locationRepository.Get(locationId)
             //     from client in _clientRepository.Get(clientId)
