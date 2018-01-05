@@ -9,7 +9,7 @@ namespace func
             // var advToeter = new AdvancedToeterAsync();
             // advToeter.SendEmail(2,6,4).Wait();
 
-            var car = WeirdCarCreator.CreateCarA(666, "brand");
+            var car = WeirdCarCreator.CreateCarA(1, 666, "brand");
         }
     }
 }

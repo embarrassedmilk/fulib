@@ -24,8 +24,20 @@ namespace func {
         public static Func<T1, Func<T2, TResult>> Curry<T1, T2, TResult>(this Func<T1, T2, TResult> function) =>
             a => b => function(a, b);
 
+        public static Func<T1, Func<T2, Func<T3, TResult>>> Curry<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> function) =>
+            a => b => c => function(a, b, c);
+
+        public static Func<T1, Func<T2, Func<T3, Func<T4, TResult>>>> Curry<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> function) =>
+            a => b => c => d => function(a, b, c, d);
+
         public static Func<T2, Func<T1, TResult>> Flip<T1, T2, TResult>(this Func<T1, Func<T2, TResult>> f) => 
             b => a => f(a)(b);
+
+        public static Func<T3, Func<T2, Func<T1, TResult>>> Flip<T1, T2, T3, TResult>(this Func<T1, Func<T2, Func<T3, TResult>>> f) => 
+            c => b => a => f(a)(b)(c);
+
+        public static Func<T4, Func<T3, Func<T2, Func<T1, TResult>>>> Flip<T1, T2, T3, T4, TResult>(this Func<T1, Func<T2, Func<T3, Func<T4, TResult>>>> f) => 
+            d => c => b => a => f(a)(b)(c)(d);
     }
 
     public class Result<A> {
@@ -65,17 +77,26 @@ namespace func {
             return new Result<int>(id);
         }
 
-        private static Car CreateCar(int id, string brandName) {
+        private static Result<int> CreateMysticId(int id) {
+            if (id != 666) {
+                return new Result<int>(new [] { "Id is not mystic enough." });
+            }
+
+            return new Result<int>(id);
+        }
+
+        private static Car CreateCar(int id, int mysticId, string brandName) {
             return new Car { Id = id, Brand = brandName };
         }
 
-        public static Result<Car> CreateCarA(int id, string brandName) {
-            Func<int, string, Car> func = CreateCar;
+        public static Result<Car> CreateCarA(int id, int mysticId, string brandName) {
+            Func<int, int, string, Car> func = CreateCar;
             var curriedCreateCar = func.Curry().Flip();
  
             var applyResult = CreateCarId(id)
-                                .Apply(CreateBrand(brandName)
-                                    .Map(curriedCreateCar));
+                                .Apply(CreateMysticId(mysticId)
+                                    .Apply(CreateBrand(brandName)
+                                        .Map(curriedCreateCar)));
 
             return applyResult;
         }
