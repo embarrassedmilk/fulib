@@ -22,22 +22,22 @@ namespace func {
 
     public static class FuncExtensions {
         public static Func<T1, Func<T2, TResult>> Curry<T1, T2, TResult>(this Func<T1, T2, TResult> function) =>
-            a => b => function(a, b);
+            t1 => t2 => function(t1, t2);
 
         public static Func<T1, Func<T2, Func<T3, TResult>>> Curry<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> function) =>
-            a => b => c => function(a, b, c);
+            t1 => t2 => t3 => function(t1, t2, t3);
 
         public static Func<T1, Func<T2, Func<T3, Func<T4, TResult>>>> Curry<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> function) =>
-            a => b => c => d => function(a, b, c, d);
+            t1 => t2 => t3 => t4 => function(t1, t2, t3, t4);
 
         public static Func<T2, Func<T1, TResult>> Flip<T1, T2, TResult>(this Func<T1, Func<T2, TResult>> f) => 
-            b => a => f(a)(b);
+            t2 => t1 => f(t1)(t2);
 
         public static Func<T3, Func<T2, Func<T1, TResult>>> Flip<T1, T2, T3, TResult>(this Func<T1, Func<T2, Func<T3, TResult>>> f) => 
-            c => b => a => f(a)(b)(c);
+            t3 => t2 => t1 => f(t1)(t2)(t3);
 
         public static Func<T4, Func<T3, Func<T2, Func<T1, TResult>>>> Flip<T1, T2, T3, T4, TResult>(this Func<T1, Func<T2, Func<T3, Func<T4, TResult>>>> f) => 
-            d => c => b => a => f(a)(b)(c)(d);
+            t4 => t3 => t2 => t1 => f(t1)(t2)(t3)(t4);
     }
 
     public class Result<A> {
