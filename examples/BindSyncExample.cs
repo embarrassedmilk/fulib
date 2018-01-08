@@ -48,7 +48,7 @@ namespace func {
         }
     }
 
-    public class AdvancedToeter {
+    public class BindSyncExample {
         private readonly LocationRepository _locationRepository = new LocationRepository();
         private readonly ClientRepository _clientRepository = new ClientRepository();
         private readonly ItemRepository _itemRepository = new ItemRepository();

@@ -24,7 +24,7 @@ namespace func {
         }
     }
 
-    public class AdvancedToeterAsync {
+    public class BindAsyncExample {
         private readonly LocationRepositoryAsync _locationRepository = new LocationRepositoryAsync();
         private readonly ClientRepositoryAsync _clientRepository = new ClientRepositoryAsync();
         private readonly ItemRepositoryAsync _itemRepository = new ItemRepositoryAsync();

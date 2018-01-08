@@ -9,7 +9,7 @@ namespace func {
         public int Id { get; set; }
     }
 
-    public class WeirdCarCreator {
+    public class ApplyExample {
         private static Result<string> CreateBrand(string brandName) {
             if (string.IsNullOrEmpty(brandName)) {
                 return Result.Failure<string>(new [] { "Brand name cannot be empty." });
