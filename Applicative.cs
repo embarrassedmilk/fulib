@@ -12,25 +12,25 @@ namespace func {
     public class WeirdCarCreator {
         private static Result<string> CreateBrand(string brandName) {
             if (string.IsNullOrEmpty(brandName)) {
-                return new Result<string>(new [] { "Brand name cannot be empty." });
+                return Result.Failure<string>(new [] { "Brand name cannot be empty." });
             }
-            return new Result<string>(brandName);
+            return Result<string>.Success(brandName);
         }
 
         private static Result<int> CreateCarId(int id) {
             if (id <= 0) {
-                return new Result<int>(new [] { "Id must be positive." });
+                return Result.Failure<int>(new [] { "Id must be positive." });
             }
 
-            return new Result<int>(id);
+            return Result<int>.Success(id);
         }
 
         private static Result<int> CreateMysticId(int id) {
             if (id != 666) {
-                return new Result<int>(new [] { "Id is not mystic enough." });
+                return Result<int>.Failure<int>(new [] { "Id is not mystic enough." });
             }
 
-            return new Result<int>(id);
+            return Result<int>.Success(id);
         }
 
         private static Car CreateCar(int id, int mysticId, string brandName) {

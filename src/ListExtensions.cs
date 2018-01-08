@@ -11,14 +11,23 @@ namespace func {
         }
 
         public static Result<List<B>> TraverseResultAppl<A,B>(Func<A, Result<B>> f, List<A> list) {
-            var initialState = new Result<List<B>>(new List<B>());
+            var initialState = Result.Success(new List<B>());
 
             Func<Result<List<B>>, A, Result<List<B>>> folder = (state, item) => {
-                //apply new result with f(item) with state...
-                return null;
+                Func<B,List<B>,List<B>> prependFunc = Prepend;
+                var cons = Result.Success(prependFunc.Curry().Flip());
+                
+                return f(item).Apply(state.Apply(cons));
             };
 
             return List.foldBack<Result<List<B>>, A>(list, initialState, folder);
         }
+
+        public static Result<List<A>> SequenceResultAppl<A>(List<Result<A>> list) {
+            Func<Result<A>, Result<A>> id = (r) => new Identity<Result<A>>(r).Value;
+            return TraverseResultAppl(id, list);
+        }
+
+        
     }
 }
