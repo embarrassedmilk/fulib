@@ -12,11 +12,11 @@ namespace func {
         }
 
         public static Result<List<B>> TraverseResultA<A,B>(this List<A> list, Func<A, Result<B>> f) {
-            var initialState = Result.Success(new List<B>());
+            var initialState = new List<B>().AsResult();
 
             Func<Result<List<B>>, A, Result<List<B>>> folder = (state, item) => {
                 Func<B,List<B>,List<B>> prependFunc = Prepend;
-                var cons = Result.Success(prependFunc.Curry().Flip());
+                var cons = prependFunc.Curry().Flip().AsResult();
                 
                 return f(item).Apply(state.Apply(cons));
             };
@@ -30,11 +30,11 @@ namespace func {
         }
 
         public static Task<List<B>> TraverseTaskA<A,B>(this List<A> list, Func<A, Task<B>> f) {
-            var initialState = TaskExtensions.AsTask(new List<B>()); //AsTask - from l-ext
+            var initialState = new List<B>().AsTask();
 
             Func<Task<List<B>>, A, Task<List<B>>> folder = (state, item) => {
                 Func<B,List<B>,List<B>> prependFunc = Prepend;
-                var cons = TaskExtensions.AsTask(prependFunc.Curry().Flip()); //AsTask - from l-ext
+                var cons = prependFunc.Curry().Flip().AsTask();
                 
                 return f(item).Apply(state.Apply(cons));
             };

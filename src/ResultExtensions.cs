@@ -16,5 +16,17 @@ namespace func {
             else
                 return Result.Failure<B>(f.Errors.Concat(a.Errors).ToList());
         }
+        
+        public static Result<A> AsResult<A>(this A obj) {
+            return Result.Success(obj);
+        }
+
+        public static Result<B> Bind<A,B>(this Result<A> a, Func<A, Result<B>> f) {
+            if (a.IsSuccess) {
+                return f(a.Value);
+            }
+
+            return Result.Failure<B>(a.Errors);
+        }
     }
 }
