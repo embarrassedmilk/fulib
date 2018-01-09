@@ -24,7 +24,7 @@ namespace func {
             return List.foldBack<Result<List<B>>, A>(list, initialState, folder);
         }
 
-        public static Result<List<A>> SequenceResultAppl<A>(this List<Result<A>> list) {
+        public static Result<List<A>> SequenceResultA<A>(this List<Result<A>> list) {
             Func<Result<A>, Result<A>> id = (r) => new Identity<Result<A>>(r).Value;
             return list.TraverseResultA(id);
         }
@@ -42,9 +42,23 @@ namespace func {
             return List.foldBack<Task<List<B>>, A>(list, initialState, folder);
         }
 
-        public static Task<List<A>> SequenceTaskA<A,B>(List<Task<A>> list) {
+        public static Task<List<A>> SequenceTaskA<A>(this List<Task<A>> list) {
             Func<Task<A>, Task<A>> id = (t) => new Identity<Task<A>>(t).Value;
             return list.TraverseTaskA(id);
+        }
+
+        public static Task<Result<List<B>>> TraverseTaskResultM<A,B>(this List<A> list, Func<A, Task<Result<B>>> f) {
+            var initialState = new List<B>().AsResult().AsTask();
+
+            Func<Task<Result<List<B>>>, A, Task<Result<List<B>>>> folder = (state, item) => 
+                f(item).BindL(h => state.BindL(t => Prepend(h,t).AsResult().AsTask()));
+
+            return List.foldBack<Task<Result<List<B>>>, A>(list, initialState, folder);
+        }
+
+        public static Task<Result<List<A>>> SequenceTaskResultM<A>(this List<Task<Result<A>>> list) {
+            Func<Task<Result<A>>, Task<Result<A>>> id = (t) => new Identity<Task<Result<A>>>(t).Value;
+            return list.TraverseTaskResultM(id);
         }
     }
 }
