@@ -14,15 +14,25 @@ namespace func
                 "http://fsharpforfunandprofit.com"
             };
 
-            var result = Traverser.GetMaxLengthOfWebsitesContentA(goodList).Result;
+            var badList = new List<string>() {
+                "http://google1.com",
+                "http://b1bc.co.uk",
+                "http://fsh1arp.org",
+                "http://fsha1rpforfunandprofit.com"
+            };
 
-            if (result.IsSuccess) {
-                Console.WriteLine($"Max content size is {result.Value}");
-            }
-            else {
-                Console.WriteLine("Errors: ");
-                Console.WriteLine(string.Join(" | ", result.Errors));
-            }
+            // var result = Traverser.GetMaxLengthOfWebsitesContentA(goodList).Result;
+
+            var task = Traverser.GetMaxLengthOfWebsitesContentM(badList);
+            task.Wait();
+
+            // if (result.IsSuccess) {
+            //     Console.WriteLine($"Max content size is {result.Value}");
+            // }
+            // else {
+            //     Console.WriteLine("Errors: ");
+            //     Console.WriteLine(string.Join(" | ", result.Errors));
+            // }
         }
     }
 }

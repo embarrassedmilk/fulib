@@ -19,6 +19,8 @@ namespace func {
             return result;
         }
     }
+    
+    
 
     public class Traverser {
         private async static Task<Result<string>> GetUriContent(Uri uri) {
@@ -50,9 +52,18 @@ namespace func {
         public static Task<Result<int>> GetMaxLengthOfWebsitesContentA(List<string> list) =>
             list
                 .Map(s => new Uri(s))
-                .Map(u => GetUriContentSize(u)).ToList()
+                .Map(u => GetUriContentSize(u))
                 .SequenceTaskA()
                 .Map(l => l.SequenceResultA())
                 .Map(t => t.Map(r => r.Max()));
+
+        public static Task<Result<int>> GetMaxLengthOfWebsitesContentM(List<string> list)
+        {
+            return list
+                .Map(s => new Uri(s))
+                .Map(u => GetUriContentSize(u))
+                .SequenceTaskResultM()
+                .MapLocal(tr => tr.Max());
+        }
     }
 }
