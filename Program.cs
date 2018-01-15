@@ -23,16 +23,17 @@ namespace func
 
             // var result = Traverser.GetMaxLengthOfWebsitesContentA(goodList).Result;
 
-            var task = Traverser.GetMaxLengthOfWebsitesContentM(badList);
-            task.Wait();
+            var task = TraverserAsync.GetMaxLengthOfWebsitesContentM(badList);
+            var result = task.Run().Result;
+            //task.Wait();
 
-            // if (result.IsSuccess) {
-            //     Console.WriteLine($"Max content size is {result.Value}");
-            // }
-            // else {
-            //     Console.WriteLine("Errors: ");
-            //     Console.WriteLine(string.Join(" | ", result.Errors));
-            // }
+            if (result.IsSuccess) {
+                Console.WriteLine($"Max content size is {result.Value}");
+            }
+            else {
+                Console.WriteLine("Errors: ");
+                Console.WriteLine(string.Join(" | ", result.Errors));
+            }
         }
     }
 }

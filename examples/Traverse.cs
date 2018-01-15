@@ -20,8 +20,6 @@ namespace func {
         }
     }
     
-    
-
     public class Traverser {
         private async static Task<Result<string>> GetUriContent(Uri uri) {
             using (var client = new WebClientWithTimeout(1000)) {

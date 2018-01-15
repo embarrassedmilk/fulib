@@ -59,5 +59,19 @@ namespace func {
             Func<Task<Result<A>>, Task<Result<A>>> id = (t) => new Identity<Task<Result<A>>>(t).Value;
             return list.TraverseTaskResultM(id);
         }
+
+        public static Async<Result<List<B>>> TraverseAsyncResultM<A,B>(this IEnumerable<A> list, Func<A, Async<Result<B>>> f) {
+            var initialState = new List<B>().AsResult().AsAsync();
+
+            Func<Async<Result<List<B>>>, A, Async<Result<List<B>>>> folder = (state, item) => 
+                f(item).BindAR(h => state.BindAR(t => Prepend(h,t).AsResult().AsAsync()));
+    
+            return list.FoldBack<Async<Result<List<B>>>, A>(initialState, folder);
+        }
+
+        public static Async<Result<List<A>>> SequenceAsyncResult<A>(this IEnumerable<Async<Result<A>>> list) {
+            Func<Async<Result<A>>, Async<Result<A>>> id = (t) => new Identity<Async<Result<A>>>(t).Value;
+            return list.TraverseAsyncResultM(id);
+        }
     }
 }

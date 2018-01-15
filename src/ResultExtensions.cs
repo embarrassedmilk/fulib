@@ -14,7 +14,7 @@ namespace func {
         public static Result<B> Map<A, B>(this Result<A> a, Func<A, B> func) {
             return a.Match(
                 Succ: val => func(val).AsResult(),
-                Fail: errs => Result<B>.Failure(null)
+                Fail: errs => Result<B>.Failure(errs)
             );
         }
 
