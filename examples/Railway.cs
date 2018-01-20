@@ -45,17 +45,14 @@ namespace func {
         {
             return _messageQueue
                         .GetCommands()
-                        .ThenVoid(messages => Task.WhenAll(messages.Select(HandleCommand)))
-                        .ThenVoid(messages => Task.WhenAll(messages.Select(MarkCommandAsHandled)));
+                        .ThenVoid(messages => Task.WhenAll(messages.Select(HandleCommand)));
         }
 
         private Task HandleCommand(Command command)
         {
-            return _commandProcessor.HandleCommand(command);
-        }
-
-        private Task MarkCommandAsHandled(Command command) {
-            return _messageQueue.MarkCommandAsHandled(command.MessageId);
+            return _commandProcessor
+                        .HandleCommand(command)
+                        .ThenVoid(c => _messageQueue.MarkCommandAsHandled(command.MessageId));
         }
     }
 
