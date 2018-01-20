@@ -17,7 +17,7 @@ namespace func {
                 Fail: errs => Result<B>.Failure(errs)
             );
         }
-
+        
         public static Result<B> Apply<A, B>(this Result<A> a, Result<Func<A, B>> f) {
             if (f.IsSuccess && a.IsSuccess)
                 return Result<B>.Success(f.Value(a.Value));
@@ -27,6 +27,25 @@ namespace func {
         
         public static Result<A> AsResult<A>(this A obj) {
             return Result<A>.Success(obj);
+        }
+
+        public static Result<A> Tee<A>(this Result<A> result, Action<A> f) {
+            return result.Match(
+                Succ: val => {
+                    f(val);
+                    return val.AsResult();
+                },
+                Fail: Result<A>.Failure
+            );
+        }
+
+        public static Result<A> TryCatchTee<A>(this Result<A> result, Action<A> f) {
+            try {
+                return result.Tee(f);
+            }
+            catch (Exception ex) {
+                return Result<A>.Failure(new List<string> {ex.Message});
+            }
         }
 
         public static Result<B> Bind<A,B>(this Result<A> a, Func<A, Result<B>> func) {

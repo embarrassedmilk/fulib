@@ -19,5 +19,23 @@ namespace func {
             var result = await f(taskResult.Value);
             return result;
         }
+
+        public static async Task<Result<TResult>> Then<T, TResult>(this Task<Result<T>> task,
+            Func<T, Result<TResult>> f)
+        {
+            var taskResult = await task;
+
+            return taskResult.Match(
+                Succ: f,
+                Fail: Result<TResult>.Failure
+            );
+        }
+
+        public static async Task<Result<T>> ThenVoid<T>(this Task<Result<T>> task, Action<T> f)
+        {
+            var taskResult = await task;
+
+            return taskResult.TryCatchTee(f);
+        }
     }
 }
