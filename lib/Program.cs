@@ -15,18 +15,14 @@ namespace func
             };
 
             var badList = new List<string>() {
-                "http://google1.com",
-                "http://b1bc.co.uk",
-                "http://fsh1arp.org",
+                "http://google.com",
+                "http://bbc1.co.uk",
+                "http://fshar1p.org",
                 "http://fsha1rpforfunandprofit.com"
             };
 
-            // var result = Traverser.GetMaxLengthOfWebsitesContentA(goodList).Result;
-
-            var task = TraverserAsync.GetMaxLengthOfWebsitesContentM(badList);
-            var result = task.Run().Result;
-            //task.Wait();
-
+            var result = Traverser.GetMaxLengthOfWebsitesContentM(goodList).Result;
+            
             if (result.IsSuccess) {
                 Console.WriteLine($"Max content size is {result.Value}");
             }

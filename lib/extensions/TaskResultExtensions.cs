@@ -9,9 +9,10 @@ namespace func {
 
         public static Task<Result<A>> AsTaskResult<A>(this A obj) => obj.AsResult().AsTask();
 
-        public static Task<Result<B>> Apply<A,B>(this Task<Result<A>> task, Task<Result<Func<A,B>>> f) => f.Bind(fResult => task.Map(tResult => tResult.Apply(fResult)));
+        public static Task<Result<TResult>> ApplyTaskResult<T, TResult>(this Task<Result<Func<T, TResult>>> f, Task<Result<T>> taskResult) => 
+            f.Bind(fResult => taskResult.Map(tResult => fResult.Apply(tResult)));
 
-        public static async Task<Result<B>> BindLocal<A,B>(this Task<Result<A>> task, Func<A,Task<Result<B>>> f) {
+        public static async Task<Result<B>> BindTaskResult<A,B>(this Task<Result<A>> task, Func<A,Task<Result<B>>> f) {
             var taskResult = await task;
             if (!taskResult.IsSuccess) {
                 return Result<B>.Failure(taskResult.Errors);

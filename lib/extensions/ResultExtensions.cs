@@ -18,7 +18,7 @@ namespace func {
             );
         }
         
-        public static Result<B> Apply<A, B>(this Result<A> a, Result<Func<A, B>> f) {
+        public static Result<B> Apply<A, B>(this Result<Func<A, B>> f, Result<A> a) {
             if (f.IsSuccess && a.IsSuccess)
                 return Result<B>.Success(f.Value(a.Value));
             else

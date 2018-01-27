@@ -50,17 +50,14 @@ namespace func {
         public static Task<Result<int>> GetMaxLengthOfWebsitesContentA(List<string> list) =>
             list
                 .Map(s => new Uri(s))
-                .Map(u => GetUriContentSize(u))
-                .SequenceTaskA()
-                .Map(l => l.SequenceResultA())
+                .TraverseTaskResultA(u => GetUriContentSize(u))
                 .Map(t => t.Map(r => r.Max()));
 
         public static Task<Result<int>> GetMaxLengthOfWebsitesContentM(List<string> list)
         {
             return list
                 .Map(s => new Uri(s))
-                .Map(u => GetUriContentSize(u))
-                .SequenceTaskResultM()
+                .TraverseTaskResultM(u => GetUriContentSize(u))
                 .MapLocal(tr => tr.Max());
         }
     }

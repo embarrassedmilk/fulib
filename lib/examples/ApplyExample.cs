@@ -38,15 +38,13 @@ namespace func {
         }
 
         public static Result<Car> CreateCarA(int id, int mysticId, string brandName) {
-            Func<int, int, string, Car> func = CreateCar;
-            var curriedCreateCar = func.Curry().Flip();
- 
-            var applyResult = CreateCarId(id)
-                                .Apply(CreateMysticId(mysticId)
-                                    .Apply(CreateBrand(brandName)
-                                        .Map(curriedCreateCar)));
+            Func<int, int, string, Car> createFunc = CreateCar;
+            var curriedCreateCar = createFunc.Curry().AsResult();
 
-            return applyResult;
+            return curriedCreateCar
+                        .Apply(CreateCarId(id))
+                        .Apply(CreateMysticId(mysticId))
+                        .Apply(CreateBrand(brandName));
         }
     }
 }
