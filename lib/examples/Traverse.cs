@@ -32,14 +32,14 @@ namespace func {
                 catch (Exception ex) {
                     Console.WriteLine($"Exception... {uri.Host}");
                     var error = $"[{uri.Host}] {ex.Message}";
-                    return Result<string>.Failure(new string[] {error});
+                    return Result<string>.Failure(error);
                 }
             }
         }
 
         private static Result<int> MakeContentSize(string html) {
             if (string.IsNullOrEmpty(html)) {
-                return Result<int>.Failure(new []{ "empty page" });
+                return Result<int>.Failure("content is empty");
             }
 
             return Result<int>.Success(html.Length);

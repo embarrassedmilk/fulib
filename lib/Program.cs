@@ -21,15 +21,19 @@ namespace func
                 "http://fsha1rpforfunandprofit.com"
             };
 
-            var result = Traverser.GetMaxLengthOfWebsitesContentM(goodList).Result;
+            var result = Traverser.GetMaxLengthOfWebsitesContentA(badList).Result;
             
-            if (result.IsSuccess) {
-                Console.WriteLine($"Max content size is {result.Value}");
-            }
-            else {
-                Console.WriteLine("Errors: ");
-                Console.WriteLine(string.Join(" | ", result.Errors));
-            }
+            result.Match(
+                Succ: val => {
+                    Console.WriteLine($"Max content size is {val}");
+                    return val.AsResult();
+                },
+                Fail: errs => {
+                    Console.WriteLine("Errors: ");
+                    Console.WriteLine(string.Join(" | ", errs));
+                    return Result<int>.Failure(errs);
+                }
+            );
         }
     }
 }

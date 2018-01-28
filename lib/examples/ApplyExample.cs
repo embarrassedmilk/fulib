@@ -12,14 +12,14 @@ namespace func {
     public class ApplyExample {
         private static Result<string> CreateBrand(string brandName) {
             if (string.IsNullOrEmpty(brandName)) {
-                return Result<string>.Failure(new [] { "Brand name cannot be empty." });
+                return Result<string>.Failure("Brand name cannot be empty.");
             }
             return Result<string>.Success(brandName);
         }
 
         private static Result<int> CreateCarId(int id) {
             if (id <= 0) {
-                return Result<int>.Failure(new [] { "Id must be positive." });
+                return Result<int>.Failure("Id must be positive.");
             }
 
             return Result<int>.Success(id);
@@ -27,7 +27,7 @@ namespace func {
 
         private static Result<int> CreateMysticId(int id) {
             if (id != 666) {
-                return Result<int>.Failure(new [] { "Id is not mystic enough." });
+                return Result<int>.Failure("Id is not mystic enough.");
             }
 
             return Result<int>.Success(id);

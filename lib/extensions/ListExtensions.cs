@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace func {
-    public static class ListResultExtensions {
+    public static class ListExtensions {
         
         private static IEnumerable<T> Append<T>(IEnumerable<T> list, T item) => list.Append(item);
 

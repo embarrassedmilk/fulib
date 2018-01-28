@@ -5,20 +5,25 @@ using System.Collections.Generic;
 
 namespace func {
     public static class TaskResultExtensions {
-        public static Task<Result<B>> MapLocal<A,B>(this Task<Result<A>> task, Func<A,B> f) => task.Map(r => r.Map(f));
+        public static Task<Result<TResult>> MapLocal<T,TResult>(this Task<Result<T>> task, Func<T,TResult> f) => task.Map(r => r.Map(f));
 
-        public static Task<Result<A>> AsTaskResult<A>(this A obj) => obj.AsResult().AsTask();
+        public static Task<Result<T>> AsTaskResult<T>(this T obj) => obj.AsResult().AsTask();
 
-        public static Task<Result<TResult>> ApplyTaskResult<T, TResult>(this Task<Result<Func<T, TResult>>> f, Task<Result<T>> taskResult) => 
-            f.Bind(fResult => taskResult.Map(tResult => fResult.Apply(tResult)));
+        public static async Task<Result<TResult>> ApplyTaskResult<T, TResult>(this Task<Result<Func<T, TResult>>> f, Task<Result<T>> taskResult) 
+        {
+            var fResult = await f;
+            var tResult = await taskResult;
 
-        public static async Task<Result<B>> BindTaskResult<A,B>(this Task<Result<A>> task, Func<A,Task<Result<B>>> f) {
+            return fResult.Apply(tResult);
+        }
+
+        public static async Task<Result<TResult>> BindTaskResult<T,TResult>(this Task<Result<T>> task, Func<T,Task<Result<TResult>>> f) {
             var taskResult = await task;
-            if (!taskResult.IsSuccess) {
-                return Result<B>.Failure(taskResult.Errors);
-            }
-            var result = await f(taskResult.Value);
-            return result;
+
+            return await taskResult.MatchAsync(
+                Succ: val => f(val),
+                Fail: Result<TResult>.Failure
+            );
         }
 
         public static async Task<Result<TResult>> Then<T, TResult>(this Task<Result<T>> task,
