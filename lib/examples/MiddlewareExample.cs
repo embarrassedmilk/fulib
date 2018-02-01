@@ -67,8 +67,8 @@ namespace func {
             _connectionString = connectionString;
         }
 
-        private Func<string, Middleware<Unit>> Time 
-            => msg => f => Instrumentation.Time(_logger, msg, f.ToNullary());
+        private Middleware<Unit> Time(string msg) 
+            => f => Instrumentation.Time(_logger, msg, f.ToNullary());
 
         private Middleware<Connection> Connect
             => f => DatabaseHelper.Connect(_connectionString, f);
