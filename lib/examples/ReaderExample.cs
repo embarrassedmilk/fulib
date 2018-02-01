@@ -1,5 +1,4 @@
 using System;
-using LanguageExt;
 
 namespace func {
     public class Api : IDisposable
@@ -8,7 +7,7 @@ namespace func {
             
         }
 
-        public Option<T> Get<T>(string key) {
+        public Result<T> Get<T>(string key) {
             throw new NotImplementedException();
         }
         

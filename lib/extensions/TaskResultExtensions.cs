@@ -1,11 +1,20 @@
-using LanguageExt;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace func {
     public static class TaskResultExtensions {
-        public static Task<Result<TResult>> MapLocal<T,TResult>(this Task<Result<T>> task, Func<T,TResult> f) => task.Map(r => r.Map(f));
+        public static async Task<Result<TResult>> MapTaskResult<T,TResult>(this Task<Result<T>> task, Func<T,TResult> f) {
+            try
+            {
+                var taskResult = await task;
+                return taskResult.Map(t => f(t));
+            }
+            catch (Exception ex)
+            {
+                return Result<TResult>.Failure(ex);
+            }
+        }
 
         public static Task<Result<T>> AsTaskResult<T>(this T obj) => obj.AsResult().AsTask();
 

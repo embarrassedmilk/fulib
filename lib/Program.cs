@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace func
@@ -7,33 +8,35 @@ namespace func
     {
         static void Main(string[] args)
         {
-            var goodList = new List<string>() {
-                "http://google.com",
-                "http://bbc.co.uk",
-                "http://fsharp.org",
-                "http://fsharpforfunandprofit.com"
-            };
+            var orders = new Orders("cs");
+            orders.DeleteOrder(Guid.NewGuid());
+            // var goodList = new List<string>() {
+            //     "http://google.com",
+            //     "http://bbc.co.uk",
+            //     "http://fsharp.org",
+            //     "http://fsharpforfunandprofit.com"
+            // };
 
-            var badList = new List<string>() {
-                "http://google.com",
-                "http://bbc1.co.uk",
-                "http://fshar1p.org",
-                "http://fsha1rpforfunandprofit.com"
-            };
+            // var badList = new List<string>() {
+            //     "http://google.com",
+            //     "http://bbc1.co.uk",
+            //     "http://fshar1p.org",
+            //     "http://fsha1rpforfunandprofit.com"
+            // };
 
-            var result = Traverser.GetMaxLengthOfWebsitesContentA(badList).Result;
+            // var result = Traverser.GetMaxLengthOfWebsitesContentA(badList).Result;
             
-            result.Match(
-                Succ: val => {
-                    Console.WriteLine($"Max content size is {val}");
-                    return val.AsResult();
-                },
-                Fail: errs => {
-                    Console.WriteLine("Errors: ");
-                    Console.WriteLine(string.Join(" | ", errs));
-                    return Result<int>.Failure(errs);
-                }
-            );
+            // result.Match(
+            //     Succ: val => {
+            //         Console.WriteLine($"Max content size is {val}");
+            //         return val.AsResult();
+            //     },
+            //     Fail: errs => {
+            //         Console.WriteLine("Errors: ");
+            //         Console.WriteLine(string.Join(" | ", errs.Select(x=>x.Message)));
+            //         return Result<int>.Failure(errs);
+            //     }
+            // );
         }
     }
 }

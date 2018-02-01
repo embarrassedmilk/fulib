@@ -1,4 +1,3 @@
-using LanguageExt;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -10,5 +9,7 @@ namespace func {
             var fResult = await f;
             return fResult(taskResult);
         }
+
+        public static Task<T> AsTask<T>(this T obj) => Task.FromResult(obj);
     }
 }

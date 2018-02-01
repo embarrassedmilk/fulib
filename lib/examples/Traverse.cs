@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using LanguageExt;
 
 namespace func {
     internal class WebClientWithTimeout : WebClient {
@@ -45,20 +44,18 @@ namespace func {
             return Result<int>.Success(html.Length);
         }
 
-        private static Task<Result<int>> GetUriContentSize(Uri uri) => GetUriContent(uri).Map(tr => tr.Bind(r => MakeContentSize(r)));
+        private static Task<Result<int>> GetUriContentSize(Uri uri) => GetUriContent(uri).Then(c => MakeContentSize(c));
 
         public static Task<Result<int>> GetMaxLengthOfWebsitesContentA(List<string> list) =>
             list
-                .Map(s => new Uri(s))
-                .TraverseTaskResultA(u => GetUriContentSize(u))
-                .Map(t => t.Map(r => r.Max()));
+                .TraverseTaskResultA(u => GetUriContentSize(new Uri(u)))
+                .MapTaskResult(t => t.Max());
 
         public static Task<Result<int>> GetMaxLengthOfWebsitesContentM(List<string> list)
         {
             return list
-                .Map(s => new Uri(s))
-                .TraverseTaskResultM(u => GetUriContentSize(u))
-                .MapLocal(tr => tr.Max());
+                .TraverseTaskResultM(u => GetUriContentSize(new Uri(u)))
+                .MapTaskResult(tr => tr.Max());
         }
     }
 }
