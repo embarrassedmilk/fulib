@@ -8,8 +8,6 @@ namespace func
     {
         static void Main(string[] args)
         {
-            var orders = new Orders("cs");
-            orders.DeleteOrder(Guid.NewGuid());
             // var goodList = new List<string>() {
             //     "http://google.com",
             //     "http://bbc.co.uk",

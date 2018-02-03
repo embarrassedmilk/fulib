@@ -1,14 +1,39 @@
 using System;
+using System.Collections.Generic;
 
 namespace func {
-    public class Api : IDisposable
+    public class ApiClient : IDisposable
     {
-        public Api() {
-            
+        private readonly Dictionary<string, object> _map;
+
+        public ApiClient() {
+            _map = new Dictionary<string, object>();
+            Open();
         }
 
         public Result<T> Get<T>(string key) {
-            throw new NotImplementedException();
+            Console.WriteLine($"[API] Getting {key}...");
+            
+            if (!_map.ContainsKey(key)) {
+                return Result<T>.Failure($"{key} does not exist");
+            }
+            
+            var val = _map[key];
+            if (!(val is T)) {
+                return Result<T>.Failure($"Value under {key} type {val.GetType().Name}");
+            }
+
+            return ((T)val).AsResult();
+        }
+
+        public Result<Unit> Set(string key, object value) {
+            if (_map.ContainsKey(key)) {
+                return Result<Unit>.Failure($"{key} already exists.");
+            }
+
+            _map.Add(key, value);
+
+            return Unit.Default.AsResult();
         }
         
         public void Open() {
@@ -21,6 +46,7 @@ namespace func {
 
         public void Dispose()
         {
+            Close();
             Console.WriteLine("[API] Disposing...");
         }
     }
@@ -51,6 +77,4 @@ namespace func {
             ProductName = productName;
         }
     }
-
-
 }
