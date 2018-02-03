@@ -52,14 +52,36 @@ namespace func {
         private readonly ClientRepositoryAsync _clientRepository = new ClientRepositoryAsync();
         private readonly ItemRepositoryAsync _itemRepository = new ItemRepositoryAsync();
 
-        public Task SendEmail(int locationId, int clientId, int itemId) => 
-            _locationRepository.Get(locationId)
-                .BindTaskResult(loc => _clientRepository.Get(clientId)
-                .BindTaskResult(cl => _itemRepository.Get(itemId)
-                .MapTaskResult(item => CreateActualEmail(loc, cl, item))))
-                .ThenVoid(email => Console.WriteLine(email));
+        // public Task SendEmail(int locationId, int clientId, int itemId) => 
+        //     _locationRepository.Get(locationId)
+        //         .BindTaskResult(loc => _clientRepository.Get(clientId)
+        //         .BindTaskResult(cl => _itemRepository.Get(itemId)
+        //         .MapTaskResult(item => CreateActualEmail(loc, cl, item))))
+        //         .ThenVoid(email => Console.WriteLine(email));
 
-        private Result<string> CreateActualEmail(Location location, Client client, Item item) => 
-            "{item.Name} for {client.Name} will be delivered to {location.Name}".AsResult();
+        public async Task SendEmail(int locationId, int clientId, int itemId) {
+            var messageRes = await
+                from location in _locationRepository.Get(locationId)
+                from item in _itemRepository.Get(itemId)
+                from client in _clientRepository.Get(clientId)
+                select CreateActualEmail(location, client, item);
+
+            messageRes.Match(
+                Succ: v => {
+                    Console.WriteLine(v); 
+                    return v.AsResult();
+                },
+                Fail: Result<string>.Failure
+            );
+        }
+
+        private string CreateActualEmail(Location location, Client client, Item item) => 
+            $"{item.Name} for {client.Name} will be delivered to {location.Name}";
+
+        private Result<string> CreateActualEmailResult(Location location, Client client, Item item) => 
+            $"{item.Name} for {client.Name} will be delivered to {location.Name}".AsResult();
+
+        private Task<Result<string>> CreateActualEmailTaskResult(Location location, Client client, Item item) => 
+            $"{item.Name} for {client.Name} will be delivered to {location.Name}".AsTaskResult();
     }
 }
