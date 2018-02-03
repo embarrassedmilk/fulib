@@ -79,15 +79,11 @@ namespace func {
         public void DeleteOrder(Guid id)
             => DeleteOrder(new { Id = id }).Run();
 
-        private Middleware<int> DeleteOrder(object param) {
-            return Time("deleting...")
-                    .Bind(_ => Connect
-                        .Bind(conn => Transact(conn)
-                            .Map(trans => {
-                                return 
-                                    conn.Execute(_deleteLines, param, trans) +
-                                    conn.Execute(_deleteOrder, param, trans);
-                    })));
-        }
+        private Middleware<int> DeleteOrder(object param) =>
+            from _ in Time("Deleting...")
+            from conn in Connect
+            from trans in Transact(conn)
+            select conn.Execute(_deleteLines, param, trans) 
+                    + conn.Execute(_deleteOrder, param, trans);
     }
 }

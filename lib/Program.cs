@@ -8,8 +8,6 @@ namespace func
     {
         static void Main(string[] args)
         {
-            new BindAsyncExample().SendEmail(2,2,2).Wait();
-            
             var orders = new Orders("cs");
             orders.DeleteOrder(Guid.NewGuid());
             // var goodList = new List<string>() {
