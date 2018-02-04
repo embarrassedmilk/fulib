@@ -12,7 +12,7 @@ namespace func {
 
         public static Task<Result<IEnumerable<TResult>>> TraverseTaskResultM<T, TResult>(this IEnumerable<T> list, Func<T, Task<Result<TResult>>> f)
         {
-            var initialState = Enumerable.Empty<TResult>().AsResult().AsTask();
+            var initialState = Enumerable.Empty<TResult>().AsTaskResult();
 
             Task<Result<IEnumerable<TResult>>> Aggregator(Task<Result<IEnumerable<TResult>>> state, T item)
             {
@@ -27,7 +27,7 @@ namespace func {
 
         public static Task<Result<IEnumerable<TResult>>> TraverseTaskResultA<T, TResult>(this IEnumerable<T> list, Func<T, Task<Result<TResult>>> f)
         {
-            var initialState = Enumerable.Empty<TResult>().AsResult().AsTask();
+            var initialState = Enumerable.Empty<TResult>().AsTaskResult();
 
             Task<Result<IEnumerable<TResult>>> Aggregator(Task<Result<IEnumerable<TResult>>> state, T item)
             {

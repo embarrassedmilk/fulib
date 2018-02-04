@@ -42,6 +42,13 @@ namespace func {
             }
             return Succ(Value);
         }
+        
+        public TResult Match<TResult>(Func<T, TResult> Succ, Func<IReadOnlyCollection<Error>, TResult> Fail) {
+            if (!IsSuccess) {
+                return Fail(Errors);
+            }
+            return Succ(Value);
+        }
 
         public async Task<Result<TResult>> MatchAsync<TResult>(Func<T, Task<Result<TResult>>> Succ, Func<IReadOnlyCollection<Error>, Result<TResult>> Fail)
         {

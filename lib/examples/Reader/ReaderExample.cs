@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace func {
@@ -11,7 +12,7 @@ namespace func {
             Open();
         }
 
-        public Result<T> Get<T>(string key) {
+        public Result<T> Get<T>(string key) where T: class {
             Console.WriteLine($"[API] Getting {key}...");
             
             if (!_map.ContainsKey(key)) {
@@ -19,7 +20,7 @@ namespace func {
             }
             
             var val = _map[key];
-            if (!(val is T)) {
+            if ((val as T) == null) {
                 return Result<T>.Failure($"Value under {key} type {val.GetType().Name}");
             }
 
@@ -27,6 +28,7 @@ namespace func {
         }
 
         public Result<Unit> Set(string key, object value) {
+            Console.WriteLine($"[API] Setting {key} and {value}");
             if (_map.ContainsKey(key)) {
                 return Result<Unit>.Failure($"{key} already exists.");
             }
@@ -76,5 +78,38 @@ namespace func {
         public ProductInfo (string productName) {
             ProductName = productName;
         }
+    }
+
+    public class ReaderExample {
+        private static ApiAction<Result<IEnumerable<ProductId>>> GetProductIds(CustomerId id)
+            => api
+            => api.Get<IEnumerable<ProductId>>(id);
+
+        private static ApiAction<Result<ProductInfo>> GetProductInfo(ProductId id)
+            => api
+            => api.Get<ProductInfo>(id);
+
+        private static ApiAction<Result<Unit>> SetupTestData()
+            => api
+            => api.Set("C1", new [] { (ProductId)"P1", (ProductId)"P2" })
+                .Bind(_ => api.Set("CX", new [] { (ProductId)"PX", (ProductId)"P2" }))
+                .Bind(_ => api.Set("P1", new ProductInfo("P1-name")))
+                .Bind(_ => api.Set("P2", new ProductInfo("P2-name")));
+
+        public static Result<Unit> TestWithCustomer(CustomerId customerId) =>
+            SetupTestData()
+                .Bind(_ => GetProductIds(customerId))
+                .ThenTraverseApplicativeWithLogs(GetProductInfo, errs => Console.WriteLine($"[SKIPPED]: {string.Join(", ", errs.Select(e => e.Message))}"))
+                .Execute()
+                .Match(
+                    Succ: val => {
+                        Console.WriteLine($"[SUCCESS]: Products: {string.Join(", ", val.Select(p => p.ProductName))}");
+                        return Unit.Default.AsResult();
+                    },
+                    Fail: errs => {
+                        Console.WriteLine($"[FAILURE]: {string.Join(", ", errs.Select(e => e.Message))}");
+                        return Result<Unit>.Failure(errs);
+                    }
+                );
     }
 }

@@ -8,6 +8,8 @@ namespace func
     {
         static void Main(string[] args)
         {
+            ReaderExample.TestWithCustomer("CX");
+
             // var goodList = new List<string>() {
             //     "http://google.com",
             //     "http://bbc.co.uk",
