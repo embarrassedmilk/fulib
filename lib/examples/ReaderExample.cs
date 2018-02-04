@@ -3,6 +3,14 @@ using System.Linq;
 using System.Collections.Generic;
 
 namespace func {
+    public static class ApiClientReaderExtensions {
+        public static Result<T> Execute<T>(this Reader<ApiClient, Result<T>> reader) {
+            using (var client = new ApiClient()) {
+                return reader.Run(client);
+            }
+        }
+    }
+
     public class ApiClient : IDisposable
     {
         private readonly Dictionary<string, object> _map;
@@ -81,15 +89,15 @@ namespace func {
     }
 
     public class ReaderExample {
-        private static ApiAction<Result<IEnumerable<ProductId>>> GetProductIds(CustomerId id)
+        private static Reader<ApiClient, Result<IEnumerable<ProductId>>> GetProductIds(CustomerId id)
             => api
             => api.Get<IEnumerable<ProductId>>(id);
 
-        private static ApiAction<Result<ProductInfo>> GetProductInfo(ProductId id)
+        private static Reader<ApiClient, Result<ProductInfo>> GetProductInfo(ProductId id)
             => api
             => api.Get<ProductInfo>(id);
 
-        private static ApiAction<Result<Unit>> SetupTestData()
+        private static Reader<ApiClient, Result<Unit>> SetupTestData()
             => api
             => api.Set("C1", new [] { (ProductId)"P1", (ProductId)"P2" })
                 .Bind(_ => api.Set("CX", new [] { (ProductId)"PX", (ProductId)"P2" }))
