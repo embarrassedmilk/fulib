@@ -4,7 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Fulib.Examples {
+namespace Fulib.Examples
+{
     internal class WebClientWithTimeout : WebClient {
         private readonly int _timeout;
 

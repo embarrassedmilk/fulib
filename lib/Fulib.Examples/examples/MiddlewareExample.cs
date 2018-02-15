@@ -1,7 +1,8 @@
 using System;
 using System.Diagnostics;
 
-namespace Fulib {
+namespace Fulib.Examples
+{
     public class Connection {
         public Transaction BeginTransaction() => new Transaction();
 

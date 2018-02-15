@@ -2,7 +2,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Fulib.Examples {
+namespace Fulib.Examples
+{
     public static class ApiClientReaderExtensions {
         public static Result<T> Execute<T>(this Reader<ApiClient, Result<T>> reader) {
             using (var client = new ApiClient()) {
