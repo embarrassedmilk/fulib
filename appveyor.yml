@@ -17,11 +17,11 @@ before_build:
   - cmd: dotnet restore --verbosity m
 build_script:
   - cmd: dotnet pack ./lib/Fulib/Fulib.csproj
-  - cmd: appveyor PushArtifact ./lib/Fulib/bin/Release/Fulib.1.0.1.nupkg
+  - cmd: appveyor PushArtifact ./lib/Fulib/bin/Release/Fulib.1.0.2.nupkg
 clone_depth: 1
 test_script:
   # restore packages for our unit tests
-  - cmd: dotnet restore ./tests/Fulib.Tests.csproj --verbosity m
+  # - cmd: dotnet restore ./tests/Fulib.Tests.csproj --verbosity m
   # run the unit tests (requires changing into the test directory)
   - cmd: cd tests
   - cmd: dotnet xunit --fx-version 2.0.0
