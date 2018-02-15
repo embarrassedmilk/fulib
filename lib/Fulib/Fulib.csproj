@@ -9,6 +9,16 @@
     <RootNamespace>Fulib</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <version>1.0.1</version>
+    <authors>Valerii Matveev</authors>
+    <owners>Valerii Matveev</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/embarrassedmilk/fulib</projectUrl>
+    <description>Yet another library for functional programming</description>
+  </PropertyGroup>
+
   <ItemGroup>
   </ItemGroup>
 

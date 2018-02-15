@@ -8,15 +8,16 @@ init:
   - cmd: git config --global core.autocrlf true
 install:
   # Install repo specific stuff here
+configuration:
+  - Release
 before_build:
   # Display .NET Core version
   - cmd: dotnet --version
   # Display minimal restore text
   - cmd: dotnet restore --verbosity m
 build_script:
-  # output will be in ./src/bin/debug/netcoreapp2.0/publish
   - cmd: dotnet pack ./lib/Fulib/Fulib.csproj
-  - cmd: appveyor PushArtifact ./lib/Fulib/bin/Debug/Fulib.1.0.0.nupkg
+  - cmd: appveyor PushArtifact ./lib/Fulib/bin/Release/*.nupkg
 clone_depth: 1
 test_script:
   # restore packages for our unit tests
