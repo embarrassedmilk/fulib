@@ -10,13 +10,15 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <version>1.0.1</version>
+    <PackageVersion>1.0.2</PackageVersion>
     <authors>Valerii Matveev</authors>
     <owners>Valerii Matveev</owners>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
-    <projectUrl>https://github.com/embarrassedmilk/fulib</projectUrl>
+    <PackageLicenseUrl>https://github.com/embarrassedmilk/fulib/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/embarrassedmilk/fulib</PackageProjectUrl>
+    <PackageTags>C#, Functional</PackageTags>
     <description>Yet another library for functional programming</description>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
