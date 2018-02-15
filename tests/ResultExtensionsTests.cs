@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
 using Xunit;
-using func;
 using FluentAssertions;
 
-namespace tests
+namespace Fulib.Tests
 {
     public class ResultExtensionsTests 
     {
@@ -22,13 +21,7 @@ namespace tests
 
             var result = elevatedSum.Apply(elevatedArg1).Apply(elevatedArg2);
 
-            result.Match(
-                Succ: v => {
-                    v.Should().Be(expectedResult);
-                    return v.AsResult();
-                },
-                Fail: _ => throw new Exception("bla")
-            );
+            result.ExtractValueUnsafe().Should().Be(expectedResult);
         }
 
         [Fact]
@@ -45,13 +38,7 @@ namespace tests
 
             var result = elevatedSum.Apply(elevatedArg1).Apply(elevatedArg2);
 
-            result.Match(
-                Succ: _ => throw new Exception("bla"),
-                Fail: errs => {
-                    errs.Select(x=>x.Message).ShouldBeEquivalentTo(expectedErrors);
-                    return Result<int>.Failure(errs);
-                }
-            );
+            result.ExtractErrorsUnsafe().Select(x => x.Message).ShouldBeEquivalentTo(expectedErrors);
         }
 
         [Fact]
@@ -88,13 +75,7 @@ namespace tests
 
             var result = elevatedFaultedFunc.Apply(elevatedArg1).Apply(elevatedArg2);
 
-            result.Match(
-                Succ: _ => throw new Exception("bla"),
-                Fail: errs => {
-                    errs.Select(x=>x.Message).ShouldBeEquivalentTo(expectedErrors);
-                    return Result<int>.Failure(errs);
-                }
-            );
+            result.ExtractErrorsUnsafe().Select(x => x.Message).ShouldBeEquivalentTo(expectedErrors);
         }
 
         [Fact]
@@ -111,13 +92,115 @@ namespace tests
 
             var result = elevatedFaultedFunc.Apply(elevatedArg1).Apply(elevatedArg2);
 
-            result.Match(
-                Succ: _ => throw new Exception("bla"),
-                Fail: errs => {
-                    errs.Select(x=>x.Message).ShouldBeEquivalentTo(expectedErrors);
-                    return Result<int>.Failure(errs);
-                }
-            );
+            result.ExtractErrorsUnsafe().Select(x => x.Message).ShouldBeEquivalentTo(expectedErrors);
+        }
+
+        [Fact]
+        public void AsResult_WrapsValue()
+        {
+            var value = new object();
+
+            value.AsResult().ExtractValueUnsafe().Should().Be(value);
+        }
+
+        [Fact]
+        public void Bind_OnSuccessfulResult_InvokesBind()
+        {
+            var bindInvoked = false;
+            var sut = Unit.Default.AsResult();
+
+            Result<Unit> Bind(Unit unit)
+            {
+                bindInvoked = true;
+                return sut;
+            }
+
+            sut.Bind(Bind);
+
+            bindInvoked.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Bind_OnFailedResult_DoesNotCallBind()
+        {
+            var bindInvoked = false;
+            var sut = Result<Unit>.Failure(string.Empty);
+
+            Result<Unit> Bind(Unit val)
+            {
+                bindInvoked = true;
+                return sut;
+            }
+
+            sut.Bind(Bind);
+
+            bindInvoked.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Map_OnSuccessfulResult_CallsMap()
+        {
+            var mapInvoked = false;
+            var sut = Unit.Default.AsResult();
+
+            Unit Map(Unit unit)
+            {
+                mapInvoked = true;
+                return Unit.Default;
+            }
+
+            sut.Map(Map);
+
+            mapInvoked.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Map_OnFailedResult_DoesNotCallMap()
+        {
+            var mapInvoked = false;
+            var sut = Result<Unit>.Failure(string.Empty);
+
+            Unit Map(Unit val)
+            {
+                mapInvoked = true;
+                return Unit.Default;
+            }
+
+            sut.Map(Map);
+
+            mapInvoked.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Tee_OnFailedResult_DoesNotCallTee()
+        {
+            var teeInvoked = false;
+            var sut = Result<Unit>.Failure(string.Empty);
+
+            void Tee(Unit unit)
+            {
+                teeInvoked = true;
+            }
+
+            sut.Tee(Tee);
+
+            teeInvoked.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Tee_OnSuccessfulResult_CallsTee()
+        {
+            var teeInvoked = false;
+            var sut = Unit.Default.AsResult();
+
+            void Tee(Unit unit)
+            {
+                teeInvoked = true;
+            }
+
+            sut.Tee(Tee);
+
+            teeInvoked.Should().BeTrue();
         }
     }
 }

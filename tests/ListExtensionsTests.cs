@@ -1,13 +1,9 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using func; 
 using FluentAssertions;
 
-using Unit = System.ValueTuple;
-
-namespace tests
+namespace Fulib.Tests
 {
     public class ListExtensionsTests
     {
@@ -18,10 +14,7 @@ namespace tests
 
             var result = await taskResult;
 
-            result.Match(
-                Succ: val =>  val.AsResult(),
-                Fail: _ => throw new Exception("Should be success")
-            );
+            result.ExtractValueUnsafe();
         }
 
         [Fact]
@@ -36,13 +29,7 @@ namespace tests
 
             var result = await taskResult;
 
-            result.Match(
-                Succ: _ =>  throw new Exception("Should be failure"),
-                Fail: errs => {
-                    errs.Select(x=>x.Message).Should().Contain(ERROR_TEXT);
-                    return Result<Unit>.Failure(errs);
-                }
-            );
+            result.ExtractErrorsUnsafe().Select(x => x.Message).Should().Contain(ERROR_TEXT);
         }
 
         [Fact]
@@ -87,10 +74,7 @@ namespace tests
 
             var result = await taskResult;
 
-            result.Match(
-                Succ: val =>  val.AsResult(),
-                Fail: _ => throw new Exception("Should be success")
-            );
+            result.ExtractValueUnsafe();
         }
 
         [Fact]
@@ -105,13 +89,7 @@ namespace tests
 
             var result = await taskResult;
 
-            result.Match(
-                Succ: _ =>  throw new Exception("Should be failure"),
-                Fail: errs => {
-                    errs.Select(x=>x.Message).Should().Contain(ERROR_TEXT);
-                    return Result<Unit>.Failure(errs);
-                }
-            );
+            result.ExtractErrorsUnsafe().Select(x => x.Message).Should().Contain(ERROR_TEXT);
         }
 
         [Fact]
@@ -164,13 +142,7 @@ namespace tests
 
             var result = await taskResult;
 
-            result.Match(
-                Succ: _ =>  throw new Exception("Should be failure"),
-                Fail: errs => {
-                    errs.Select(x=>x.Message).Should().BeEquivalentTo(expectedFailures);
-                    return Result<Unit>.Failure(errs);
-                }
-            );
+            result.ExtractErrorsUnsafe().Select(x => x.Message).Should().BeEquivalentTo(expectedFailures);
         }
 
         private Task<Result<Unit>> GetSuccessfulTaskResult()

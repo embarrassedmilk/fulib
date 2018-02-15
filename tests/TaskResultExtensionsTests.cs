@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
 using Xunit;
-using func;
 using System.Threading.Tasks;
 using FluentAssertions;
 
-namespace tests
+namespace Fulib.Tests
 {
     public class TaskResultExtensionsTests
     {
@@ -22,14 +21,7 @@ namespace tests
             var elevatedArg2 = secondArg.AsTaskResult();
 
             var taskResult = await elevatedSum.ApplyTaskResult(elevatedArg1).ApplyTaskResult(elevatedArg2);
-
-            taskResult.Match(
-                Succ: v => {
-                    v.Should().Be(expectedResult);
-                    return v.AsResult();
-                },
-                Fail: _ => throw new Exception("bla")
-            );
+            taskResult.ExtractValueUnsafe().Should().Be(expectedResult);
         }
 
         [Fact]
@@ -46,13 +38,114 @@ namespace tests
 
             var result = await elevatedSum.ApplyTaskResult(elevatedArg1).ApplyTaskResult(elevatedArg2);
 
-            result.Match(
-                Succ: _ => throw new Exception("bla"),
-                Fail: errs => {
-                    errs.Select(x=>x.Message).ShouldBeEquivalentTo(expectedErrors);
-                    return Result<int>.Failure(errs);
-                }
-            );
+            result.ExtractErrorsUnsafe().Select(x => x.Message).ShouldBeEquivalentTo(expectedErrors);
+        }
+
+        [Fact]
+        public async Task BindTaskResult_WithSuccessfulTask_CallsBind()
+        {
+            var bindInvoked = false;
+            var sut = Unit.Default.AsTaskResult();
+
+            Task<Result<Unit>> BindingFunc(Unit unit)
+            {
+                bindInvoked = true;
+                return sut;
+            }
+
+            await sut.BindTaskResult(BindingFunc);
+
+            bindInvoked.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task BindTaskResult_WithFaultedTask_DoesNotCallBind()
+        {
+            var bindInvoked = false;
+            var faultedTask = GetFaultedTask();
+
+            Task<Result<Unit>> Bind(Unit unit)
+            {
+                bindInvoked = true;
+                return Unit.Default.AsTaskResult();
+            }
+
+            await faultedTask.BindTaskResult(Bind);
+
+            bindInvoked.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task MapTaskResult_WithSuccessfulTask_CallsMap()
+        {
+            var mapInvoked = false;
+            var wrappedValue = Unit.Default.AsTaskResult();
+
+            Unit MappingFunc(Unit unit)
+            {
+                mapInvoked = true;
+                return unit;
+            }
+
+            await wrappedValue.MapTaskResult(MappingFunc);
+
+            mapInvoked.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task MapTaskResult_WithFaultedTask_DoesNotCallMap()
+        {
+            var mapInvoked = false;
+            var wrappedValue = GetFaultedTask();
+
+            Unit Map(Unit unit)
+            {
+                mapInvoked = true;
+                return unit;
+            }
+
+            await wrappedValue.MapTaskResult(Map);
+
+            mapInvoked.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task Then_WithSuccessfulTask_CallsNextFunc()
+        {
+            var funcInvoked = false;
+            var sut = Unit.Default.AsTaskResult();
+
+            Result<Unit> NextFunc(Unit unit)
+            {
+                funcInvoked = true;
+                return unit.AsResult();
+            }
+
+            await sut.Then(NextFunc);
+
+            funcInvoked.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task Then_WithFaultedTask_DoesNotCallNextFunc()
+        {
+            var funcInvoked = false;
+            var faultedTask = GetFaultedTask();
+
+            Result<Unit> NextFunc(Unit unit)
+            {
+                funcInvoked = true;
+                return unit.AsResult();
+            }
+
+            await faultedTask.Then(NextFunc);
+
+            funcInvoked.Should().BeFalse();
+        }
+
+        private Task<Result<Unit>> GetFaultedTask()
+        {
+            return Task.FromException<Result<Unit>>(new Exception());
         }
     }
 }
