@@ -18,7 +18,6 @@
     <PackageProjectUrl>https://github.com/embarrassedmilk/fulib</PackageProjectUrl>
     <PackageTags>C#, Functional</PackageTags>
     <description>Yet another library for functional programming</description>
-    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
