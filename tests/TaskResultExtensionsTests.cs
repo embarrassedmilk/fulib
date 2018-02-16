@@ -108,6 +108,73 @@ namespace Fulib.Tests
 
             mapInvoked.Should().BeFalse();
         }
+        
+        [Fact]
+        public async Task TeeTaskResultAsync_WithSuccessfulTask_CallsTee()
+        {
+            var teeInvoked = false;
+            var wrappedValue = Unit.Default.AsTaskResult();
+
+            Task TeeFunc(Unit unit)
+            {
+                teeInvoked = true;
+                return Task.CompletedTask;
+            }
+
+            await wrappedValue.TeeTaskResultAsync(TeeFunc);
+
+            teeInvoked.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task TeeTaskResultAsync_WithFaultedTask_DoesNotCallTee()
+        {
+            var teeInvoked = false;
+            var wrappedValue = GetFaultedTask();
+
+            Task TeeFunc(Unit unit)
+            {
+                teeInvoked = true;
+                return Task.CompletedTask;
+            }
+
+            await wrappedValue.TeeTaskResultAsync(TeeFunc);
+
+            teeInvoked.Should().BeFalse();
+        }
+
+        
+        [Fact]
+        public async Task TeeTaskResult_WithSuccessfulTask_CallsTee()
+        {
+            var teeInvoked = false;
+            var wrappedValue = Unit.Default.AsTaskResult();
+
+            void TeeFunc(Unit unit)
+            {
+                teeInvoked = true;
+            }
+
+            await wrappedValue.TeeTaskResult(TeeFunc);
+
+            teeInvoked.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task TeeTaskResult_WithFaultedTask_DoesNotCallTee()
+        {
+            var teeInvoked = false;
+            var wrappedValue = GetFaultedTask();
+
+            void TeeFunc(Unit unit)
+            {
+                teeInvoked = true;
+            }
+
+            await wrappedValue.TeeTaskResult(TeeFunc);
+
+            teeInvoked.Should().BeFalse();
+        }
 
         [Fact]
         public async Task Then_WithSuccessfulTask_CallsNextFunc()

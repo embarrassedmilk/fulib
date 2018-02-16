@@ -15,5 +15,8 @@ namespace Fulib
 
         public static Task<Result<IEnumerable<TResult>>> TraverseTaskResultA<T, TResult>(this IEnumerable<T> list, Func<T, Task<Result<TResult>>> f)
             => list.Aggregate(Enumerable.Empty<TResult>().AsTaskResult(), (s, i) => CurriedAppend<TResult>().AsTaskResult().ApplyTaskResult(s).ApplyTaskResult(f(i)));
+            
+        public static Task<Result<IEnumerable<TResult>>> TraverseTaskResultASequentially<T, TResult>(this IEnumerable<T> list, Func<T, Task<Result<TResult>>> f)
+            => list.Aggregate(Enumerable.Empty<TResult>().AsTaskResult(), async (s, i) => CurriedAppend<TResult>().AsResult().Apply(await s).Apply(await f(i)));
     }
 }

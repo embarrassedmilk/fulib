@@ -51,12 +51,28 @@ namespace Fulib
             }
         }
 
-        public static async Task<Result<T>> TeeTaskResult<T>(this Task<Result<T>> task, Func<T, Task> f)
+        public static async Task<Result<T>> TeeTaskResultAsync<T>(this Task<Result<T>> task, Func<T, Task> f)
         {
             try
             {
                 var taskResult = await task;
                 return await taskResult.MatchTeeAsync(
+                    Succ: f,
+                    Fail: _ => { }
+                );
+            }
+            catch (Exception ex)
+            {
+                return Result<T>.Failure(ex);
+            }
+        }
+
+        public static async Task<Result<T>> TeeTaskResult<T>(this Task<Result<T>> task, Action<T> f)
+        {
+            try
+            {
+                var taskResult = await task;
+                return taskResult.MatchTee(
                     Succ: f,
                     Fail: _ => { }
                 );
@@ -87,6 +103,10 @@ namespace Fulib
 
         public static Task<Result<IEnumerable<TResult>>> ThenTraverseA<T, TResult>(this Task<Result<IEnumerable<T>>> taskResult, Func<T, Task<Result<TResult>>> f) =>
             taskResult.BindTaskResult(items => items.TraverseTaskResultA(f));
+
+            
+        public static Task<Result<IEnumerable<TResult>>> ThenTraverseASequentially<T, TResult>(this Task<Result<IEnumerable<T>>> taskResult, Func<T, Task<Result<TResult>>> f) =>
+            taskResult.BindTaskResult(items => items.TraverseTaskResultASequentially(f));
 
         public static Task<Result<IEnumerable<TResult>>> ThenTraverseM<T, TResult>(this Task<Result<IEnumerable<T>>> taskResult, Func<T, Task<Result<TResult>>> f) =>
             taskResult.BindTaskResult(items => items.TraverseTaskResultM(f));

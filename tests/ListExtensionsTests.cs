@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
+using System.Collections.Generic;
 
 namespace Fulib.Tests
 {
@@ -73,6 +74,24 @@ namespace Fulib.Tests
             var taskResult = Enumerable.Range(0, 10).TraverseTaskResultA(i => GetSuccessfulTaskResult());
 
             var result = await taskResult;
+
+            result.ExtractValueUnsafe();
+        }
+        
+        [Fact]
+        public async Task TraverseTaskResultASequentially_WaitsForEachItem()
+        {
+            var busyWithOtherItem = true;
+            var result = await Enumerable.Range(0, 20).TraverseTaskResultASequentially(async _ => 
+                {
+                    if (busyWithOtherItem == false)
+                        return Result<Unit>.Failure("bla");
+                    
+                    busyWithOtherItem = false;
+                    await Task.Delay(10);
+                    busyWithOtherItem = true;
+                    return Unit.Default.AsResult();
+                });
 
             result.ExtractValueUnsafe();
         }
