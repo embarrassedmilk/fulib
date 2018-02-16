@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageVersion>1.0.2</PackageVersion>
+    <PackageVersion>1.0.3</PackageVersion>
     <authors>Valerii Matveev</authors>
     <owners>Valerii Matveev</owners>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
