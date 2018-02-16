@@ -81,15 +81,15 @@ namespace Fulib.Tests
         [Fact]
         public async Task TraverseTaskResultASequentially_WaitsForEachItem()
         {
-            var busyWithOtherItem = true;
+            var busyWithOtherItem = false;
             var result = await Enumerable.Range(0, 20).TraverseTaskResultASequentially(async _ => 
                 {
-                    if (busyWithOtherItem == false)
+                    if (busyWithOtherItem == true)
                         return Result<Unit>.Failure("bla");
                     
-                    busyWithOtherItem = false;
-                    await Task.Delay(10);
                     busyWithOtherItem = true;
+                    await Task.Delay(10);
+                    busyWithOtherItem = false;
                     return Unit.Default.AsResult();
                 });
 
